@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Toggles wireguard interface
+
+WG_INTERFACE="wg-mlvd"
+# 0 means interface is up
+if ( sudo wg | grep -q $WG_INTERFACE )
+then
+    sudo wg-quick down $WG_INTERFACE
+else
+    sudo wg-quick up $WG_INTERFACE
+fi
