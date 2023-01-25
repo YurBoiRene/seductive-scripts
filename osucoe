@@ -1,0 +1,24 @@
+#!/bin/zsh
+
+echo "Looking for openconnect process"
+openconnect_pid=$(pgrep openconnect)
+result=$?
+if (( $result == 0 ))
+then
+    printf "Process found, do you want to kill? (y/n) "
+    read confirm
+    if [ "$confirm" != "${confirm#[Yy]}" ]; then
+        echo "Killing $openconnect_pid"
+        sudo kill $openconnect_pid
+    fi
+else
+    echo "Process not found, spawning..."
+    SESSION_KEY="$(bw unlock --raw)"
+    if (( $? == 0 )); then
+        OSU_BW_ID="e8c12950-6418-48b6-967f-ab12011e4bca"
+        username="$(bw get username $OSU_BW_ID --session $SESSION_KEY)"
+        password="$(bw get password $OSU_BW_ID --session $SESSION_KEY)"
+        bw lock
+        { printf 'CoE-Net\n'; sleep .1; echo "$username"; sleep .1; echo "$password"; sleep .1; printf 'push\n'; sleep 7; printf 'Personal Device - SSL\n' } | sudo openconnect --no-dtls vpn.coeit.osu.edu --protocol=nc --background
+    fi
+fi
