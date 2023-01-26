@@ -1,0 +1,2 @@
+# Unzips all zips to their own directories
+find *.zip -exec bash -c 'unzip "{}" -d $(basename "{}" .zip)' \;
